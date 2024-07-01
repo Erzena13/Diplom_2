@@ -97,8 +97,9 @@ public class  CreateOrderTest extends AbstractTest {
     }
 
     @Test
-    //при создании заказа, неавторизованным пользователем, нас перекидывает на экран авторизации, в ответе 200ОК
-    // и success: true, долго думала, но вроде проверка валидная
+    //неавторизованный пользователь не может создавать заказы по документации, но в реале он дает ответ 200 ок
+    // и создает заказ, это баг, Анатолий сказал писать тест как должен работать, а не как работает сейчас
+    //поэтому этот кейс падает тут :(
     public void createOrderWithoutAuthTest() {
         email = RandomStringUtils.randomAlphabetic(5) + "@example.com";
         password = RandomStringUtils.randomAlphabetic(8);
@@ -120,8 +121,9 @@ public class  CreateOrderTest extends AbstractTest {
         orderSteps
                 .createOrderWithoutAuth(randomIngredients)
                 .then()
-                .statusCode(200)
-                .body("success", Matchers.is(true));
+                .statusCode(401)
+                .body("success", Matchers.is(false))
+                .body("message", equalTo("You should be authorised"));
     }
 
     @Test
